@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para la pequeña Yaz</title>
+    <!-- Importamos letras elegantes y cursivas -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            /* Aquí cargamos tu nuevo atardecer */
+            background-image: url('atardecer.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Capa oscura cálida para que resalte la tarjeta */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(40, 20, 10, 0.4);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Luciérnagas flotantes mágicas */
+        .fireflies {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .firefly {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800;
+            animation: float-up linear infinite;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) translateX(50px) scale(0.5); opacity: 0; }
+        }
+
+        .main-content {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        /* Tarjeta principal estilo polaroid rústica */
+        .card-button {
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #8d6e63;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transition: all 0.4s ease;
+            max-width: 280px;
+            backdrop-filter: blur(4px);
+        }
+
+        .card-button:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.8);
+            border-color: #d84315;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid #d7ccc8;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .card-button:hover .card-image img {
+            transform: scale(1.08);
+        }
+
+        .card-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #4e342e;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .instruction {
+            font-size: 1.1rem;
+            color: #ffe082;
+            margin-top: 25px;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.9);
+            letter-spacing: 1px;
+            animation: pulse 2.5s infinite;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Carta de papel que se abre al dar clic */
+        #letter-modal {
+            display: none;
+            z-index: 10;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff8e1; /* Color tipo papel pergamino */
+            background-image: radial-gradient(#fff3e0 20%, #ffecb3 80%);
+            border-radius: 12px;
+            padding: 40px 35px;
+            width: 85%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(141, 110, 99, 0.2);
+            border: 2px solid #bcaaa4;
+            text-align: center;
+        }
+
+        .letter-open {
+            animation: unfold 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes unfold {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .letter-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: #3e2723;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .letter-text .highlight {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.1rem;
+            color: #bf360c;
+            display: block;
+            text-align: center;
+            margin: 25px 0;
+            line-height: 1.3;
+        }
+
+        .close-btn {
+            background: #8d6e63;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .close-btn:hover {
+            background: #5d4037;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 600px) {
+            .card-button { width: 75%; max-width: 300px; }
+            .card-image { height: 260px; }
+            #letter-modal { padding: 30px 20px; width: 90%; }
+            .letter-text { font-size: 1.1rem; }
+            .letter-text .highlight { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <!-- Contenedor de las luciérnagas generadas con código -->
+    <div class="fireflies" id="fireflies-container">
+        <script>
+            const container = document.getElementById('fireflies-container');
+            for(let i=0; i<35; i++){
+                let firefly = document.createElement('div');
+                firefly.className = 'firefly';
+                firefly.style.left = Math.random() * 100 + 'vw';
+                firefly.style.animationDuration = (Math.random() * 6 + 4) + 's';
+                firefly.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(firefly);
+            }
+        </script>
+    </div>
+
+    <div class="main-content" id="main-ui">
+        <div class="card-button" onclick="openLetter()">
+            <div class="card-image">
+                <!-- Aquí se carga la imagen del sombrero -->
+                <img src="sombrero.jpg" alt="Sombrero y Flores">
+            </div>
+            <h2 class="card-title">Para la pequeña Yaz</h2>
+        </div>
+        <div class="instruction">Toca la imagen para abrir tu carta ✨</div>
+    </div>
+
+    <!-- La carta con el mensaje -->
+    <div id="letter-modal">
+        <div class="letter-text">
+            Mi pequeña Yaz, <br><br>
+            Hoy quiero recordarte algo muy importante: <b>tú eres lo más valioso de este mundo.</b> <br><br>
+            Prométeme que de ahora en adelante te vas a poner a ti misma primero, sin dudarlo ni un solo segundo. Eres fuerte, eres valiente y mereces todo lo hermoso que la vida tiene para ofrecer. No dejes que nada ni nadie apague nunca tu luz.<br>
+            <span class="highlight">Pase lo que pase, siempre te voy a querer y amar con todo mi corazón.</span>
+            Sigue floreciendo. 🌻
+        </div>
+        <button class="close-btn" onclick="closeLetter()">Cerrar Carta</button>
+    </div>
+
+    <script>
+        function openLetter() {
+            document.getElementById('main-ui').style.filter = "blur(10px)";
+            document.getElementById('main-ui').style.pointerEvents = "none"; 
+            
+            const modal = document.getElementById('letter-modal');
+            modal.style.display = "block";
+            modal.classList.remove("letter-open"); 
+            void modal.offsetWidth;
+            modal.classList.add("letter-open");
+        }
+
+        function closeLetter() {
+            document.getElementById('letter-modal').style.display = "none";
+            document.getElementById('main-ui').style.filter = "none";
+            document.getElementById('main-ui').style.pointerEvents = "auto";
+        }
+    </script>
+</body>
+</html>
